@@ -18,30 +18,6 @@
 " You should have received a copy of the GNU General Public License
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "
-" Description:
-" DocTabs is a plugin that makes one file appear like a collection of
-" separate files, so you can zoom in on one section at a time, with
-" user-defined sections that keep their own context, within the same
-" buffer.
-"
-" You can navigate and jump between sections seamlessly, and even choose
-" between file and local actions. Some use cases are: documentation,
-" source code, HTML, project plans, todo or GTD files, reminder files,
-" journals, novels, etc. 
-"
-" You can set manual tags of the form #Section in your document, or use a
-" pattern to identify section headings. DocTabs updates sections on file
-" updates, and there is minimal overhead at edit time. This means there
-" is no lag even with very large documents. Keeping the plugin lightweight
-" is a first-class priority.
-"
-" DocTabs was developed using DocTabs.
-"
-" Features:
-" - Fast
-" - Feels like your document is split into sections
-" - Renders a tab line showing the active section
-"
 " Versions:
 " 0.1    Render tabline
 "
@@ -95,7 +71,7 @@ function! DocTabsGetCurrentSection()
 endfunction
 
 let g:doctabs_section_pattern = '^#[a-zA-Z0-9_:-]\+$'
-let g:doctabs_section_pattern = '#[a-zA-Z0-9_:-]\+#'
+" let g:doctabs_section_pattern = '#[a-zA-Z0-9_:-]\+#'
 
 " Compute section start/end positions on write
 function! DocTabsComputeSections()
