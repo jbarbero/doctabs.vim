@@ -28,6 +28,14 @@ Features:
 - Fast
 - Feels like your document is split into sections
 - Renders a tab line showing the active section
+- Customizable section pattern
+- Keeps independent context (window and cursor position) for each section
+- Optionally fold away sections other than the active one
+
+Warnings:
+DocTabs takes over the tabline, so if tabs are part of your workflow
+or you use plugins like buftabline/airline, you may get conflicting
+behavior.
 
 Copyright:
 This program is free software: you can redistribute it and/or modify

@@ -4,6 +4,8 @@
 "
 " Author: Janos Barbero <jbarbero@cs.washington.edu>
 "
+" ###Docs
+"
 " Copyright:
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -24,24 +26,22 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
-" - Saves state on a move between sections, e.g. by a search or move
-" - Has functions you can map to navigate sections
-" - Enforces that only one section can be shown at a time, except
-" if sections are shorter than a page
-" - Allows operations on only a section, like search-and-replace in section
 " - Shortcut to jump to last known buffer
-" - Can we hack the vim display to hide the other sections entirely?
+" - Has functions you can map to navigate sections
+" - Handle section changes due to lines changing, not just writes. Decide
+"   which file updates will trigger this.
+" - Write vim compatible doc
+" - Allows operations on only a section, like search-and-replace in section
+" - Deal with switching between windows, i.e. allow a section to be
+"   transparently pinned to a given window
+" - Add signs (visual marks) to denote sections
 "
 " Optional:
 " - Make tabline use optional
 "
 " Known_issues:
-" - Switching back to a buffer if it had been closed confuses the script
-" - Switching between windows doesn't restore the tab line (only on write)
-" - Can't make sections in source code files, regex isn't aware enough
 "
 " Requirements_old:
-" [_] Need to create windows on open
 " [_] Need to switch windows focus on line range
 " [_] Need to compute 'section' start/end positions on write, and on first read
 " [_] In CursorMoved, need to jump to the windows corresponding to the section
@@ -50,33 +50,47 @@
 " TODO:
 " Test out enabling for all files!
 " Add the planned features
-" Download the GPL
-" Move to separate file, make sure pathogen compatible
-" Disable in insert mode, it may be causing slowness
+" Do something nicer than blanking tabline if all sections disappear
+" screen-like navigation features:
+"   jump to specific section with label (C-t ...)
+"   next, previous sections (C-t p/h, C-t n/l), maybe even C-h/C-n?
+"   alternate section (C-t C-t)
+" Decide: Switch sections in insert mode or not?
 "
 
-" #Code#
+" ###Code
 
+" Config
+" DocTabs uses the last matching group from a pattern match as the section title
+let g:doctabs_sections        = get(g:, 'doctabs_sections',        '###\([a-zA-Z0-9_:-]\+\)')
+let g:doctabs_default_section = get(g:, 'doctabs_default_section', '~Top')
+let g:doctabs_number_tabs     = get(g:, 'doctabs_number_tabs',     1)
+let g:doctabs_section_views   = get(g:, 'doctabs_section_views',   1)
+let g:doctabs_fold_others     = get(g:, 'doctabs_fold_others',     0)
+
+" Functions
 function! DocTabsGetCurrentSection()
     let curline = line('.')
     " echo ["getcur", curline, b:sections]
-    for [tagname, tagpos, endpos] in b:sections
+    let ii = 0
+    for [tagname, tagpos, endpos, sectionview] in b:sections
         " echo ["for", tagname, tagpos, endpos, curline]
         if curline >= tagpos && (endpos == '$' || curline <= endpos)
             " echo ["returning", tagname, tagpos, endpos]
-            return [tagname, tagpos, endpos]
+            return [ii, tagname, tagpos, endpos, sectionview]
         endif
+        let ii += 1
     endfor
-    return ['DEFAULT', 1, '$']
+    return [0, g:doctabs_default_section, 1, '$', {}]
 endfunction
-
-let g:doctabs_section_pattern = '^#[a-zA-Z0-9_:-]\+$'
-" let g:doctabs_section_pattern = '#[a-zA-Z0-9_:-]\+#'
 
 " Compute section start/end positions on write
 function! DocTabsComputeSections()
     " Save window view and cursor position, reset at end
     let view = winsaveview()
+
+    let b:sections_old = get(b:, 'sections', [])
+    " TODO handle section renames, insertions, etc
 
     let b:sections = []
     let last = 0
@@ -85,12 +99,18 @@ function! DocTabsComputeSections()
     call cursor(1, 1)
 
     let ii = 0
-    let tagpos = search(g:doctabs_section_pattern, 'cW', endpos)
+    let tagpos = search(g:doctabs_sections, 'cW', endpos)
     " On false, returns 0, which also fails the loop condition
     while tagpos > last
         let last = tagpos
-        let tagname = getline('.') " TODO: tagname should be last match, not full line
-        let b:sections += [[tagname, tagpos, '$']]
+        let line = getline('.')
+        let matches = matchlist(line, g:doctabs_sections)
+        for matchgroup in matches
+            if matchgroup != ''
+                let tagname = matchgroup
+            endif
+        endfor
+        let b:sections += [[tagname, tagpos, '$', {}]]
         
         if ii > 0
             let b:sections[-2][2] = tagpos - 1
@@ -100,16 +120,16 @@ function! DocTabsComputeSections()
         " echo [tagname, "last", b:sections[-2]]
 
         " Don't accept a match at current position - must advance
-        let tagpos = search(g:doctabs_section_pattern, 'W', endpos)
+        let tagpos = search(g:doctabs_sections, 'W', endpos)
     endwhile
 
     " echo ["len", len(b:sections)]
 
     " Add sentinels
     if len(b:sections) == 0
-        let b:sections = [["DEFAULT", 1, '$']]
+        let b:sections = [[g:doctabs_default_section, 1, '$', {}]]
     elseif b:sections[0][1] != 1
-        let b:sections = [["DEFAULT", 1, b:sections[0][1]-1]] + b:sections
+        let b:sections = [[g:doctabs_default_section, 1, b:sections[0][1]-1, {}]] + b:sections
     endif
 
     " echo ["len", len(b:sections)]
@@ -122,12 +142,12 @@ endfunction
 function! DocTabsRenderTabline()
     set showtabline=2
 
-    let [w:curtag, w:tagstart, w:tagend] = DocTabsGetCurrentSection()
+    let [w:section, w:curtag, w:tagstart, w:tagend, w:sectionview] = DocTabsGetCurrentSection()
 
     let line = ''
     
     let curline = line('.')
-    for [tagname, tagpos, endpos] in b:sections
+    for [tagname, tagpos, endpos, sectionview] in b:sections
         if curline >= tagpos && (endpos == '$' || curline <= endpos)
             let line .= '%#TabLineSel#'
         else
@@ -154,7 +174,6 @@ function! DocTabsInit()
         au! CursorMoved *
         augroup END
 
-        " TODO: this just blanks tabline, it would be nicer to revert to previous cleanly
         let showtabline = 1
         let &l:tabline = ''
     else
@@ -173,7 +192,12 @@ function! DocTabsInit()
         "             \"start", w:newline < w:tagstart,
         "             \"end", w:tagend != '$' && w:newline > w:tagend,
         "             \] | let w:curline = w:newline | endif
-        au! CursorMoved * let w:newline = line('.') | if w:curline != w:newline | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) | call DocTabsSectionMoved(w:newline) | endif | let w:curline = w:newline | endif
+
+        if g:doctabs_section_views
+            au! CursorMoved * let w:newline = line('.') | if w:curline != w:newline | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) | call DocTabsSectionMoved(w:newline) | else | let b:sections[w:section][3] = winsaveview() | endif | let w:curline = w:newline | endif
+        else
+            au! CursorMoved * let w:newline = line('.') | if w:curline != w:newline | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) | call DocTabsSectionMoved(w:newline) | endif | let w:curline = w:newline | endif
+        endif
         augroup END
 
         call DocTabsRenderTabline()
@@ -182,14 +206,34 @@ endfunction
 
 " Update on window enter
 function! DocTabsWindowInit()
-    let [w:curtag, w:tagstart, w:tagend] = DocTabsGetCurrentSection()
+    let [w:section, w:curtag, w:tagstart, w:tagend, w:sectionview] = DocTabsGetCurrentSection()
     let w:curline = line('.')
     call DocTabsRenderTabline()
 endfunction
 
 " Update on section move
 function! DocTabsSectionMoved(newline)
-    let [w:curtag, w:tagstart, w:tagend] = DocTabsGetCurrentSection()
+    let [w:newsection, w:curtag, w:tagstart, w:tagend, w:sectionview] = DocTabsGetCurrentSection()
+    
+    if g:doctabs_fold_others
+        set fdm=manual
+        let [oldtag, oldstart, oldend, oldview] = b:sections[w:section]
+        execute oldstart . ',' . oldend . 'fold'
+        execute w:tagstart . ',' . w:tagend . 'foldopen'
+    endif
+
+    let w:section = w:newsection
+
+    if g:doctabs_section_views
+        " Restore everything except cursor position - the user knows where
+        " they're going
+        let curview = winsaveview()
+        let w:sectionview['lnum'] = curview['lnum']
+        let w:sectionview['col'] = curview['col']
+        let w:sectionview['coladd'] = curview['coladd']
+        call winrestview(w:sectionview)
+    endif
+
     call DocTabsRenderTabline()
 endfunction
 
