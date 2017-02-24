@@ -2,52 +2,19 @@ DocTabs: a vim plugin for organizing a file into sections
 
 Author: Janos Barbero <jbarbero@cs.washington.edu>
 
-Description:
-DocTabs is a plugin that makes one file appear like a collection of
-separate files, so you can zoom in on one section at a time, with
-user-defined sections that keep their own context, within the same
-buffer.
+DocTabs is a plugin that lets you organize a file into sections which
+look like a collection of separate files with their own separate context.
+When you are done working on one section, you can jump to another section
+with your normal movement commands, or by the provided navigation commands,
+and resume the same editing context you had in that section. The tabline
+is used to highlight the currently active section.
 
-You can navigate and jump between sections seamlessly, and even choose
-between file and local actions. Some use cases are: documentation,
-source code, HTML, project plans, todo or GTD files, reminder files,
-journals, novels, etc. 
+This allows you to zoom in on one section at a time, but still jump to another
+section seamlessly. Some use cases are documentation, source code, HTML,
+project plans, todo or GTD files, reminder files, journals, novels, etc. The
+DocTabs plugin and documentation were both written using DocTabs.
 
-You can set manual tags of the form #Section in your document, or use a
-pattern to identify section headings. DocTabs updates sections on file
-updates, and there is minimal overhead at edit time. This means there
-is no lag even with very large documents. Keeping the plugin lightweight
-is a first-class priority.
+For more information, check out doc/doctabs.txt
 
-DocTabs was developed using DocTabs.
-
-Status:
-DocTabs is early alpha.
-
-Features:
-- Fast
-- Feels like your document is split into sections
-- Renders a tab line showing the active section
-- Customizable section pattern
-- Keeps independent context (window and cursor position) for each section
-- Optionally fold away sections other than the active one
-
-Warnings:
-DocTabs takes over the tabline, so if tabs are part of your workflow
-or you use plugins like buftabline/airline, you may get conflicting
-behavior.
-
-Copyright:
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+DocTabs is released under the GNU General Public License, version 3.
 

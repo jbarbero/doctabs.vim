@@ -1,0 +1,221 @@
+*doctabs.txt*   For Vim version 7.3 Last change: 2017 Feb 22
+
+Split up your files into sections, but treat them as one, too!
+
+Send flames to: Janos Barbero <jbarbero@cs.washington.edu>
+
+
+1. Overview                                         |doctabs-intro|
+2. Features                                         |doctabs-features|
+3. Requirements                                     |doctabs-requirements|
+4. Installation                                     |doctabs-install|
+5. Usage                                            |doctabs-usage|
+6. Options                                          |doctabs-options|
+7. License                                          |doctabs-license|
+
+
+==============================================================================
+                                                    *doctabs-intro*
+1. Overview~
+
+DocTabs is a plugin that lets you organize a file into sections which
+look like a collection of separate files with their own separate context.
+When you are done working on one section, you can jump to another section
+with your normal movement commands, or by the provided navigation commands,
+and resume the same editing context you had in that section. The tabline
+is used to highlight the currently active section.
+
+This allows you to zoom in on one section at a time, but still jump
+to another section seamlessly. Some use cases are documentation,
+source code, HTML, project plans, todo or GTD files, reminder files,
+journals, novels, your ~/.vimrc, etc. The DocTabs plugin and
+documentation were both written using DocTabs.
+
+Try it now by jumping to the next section with the shorcut <Leader>gn
+If you don't know your mapleader, try typing this: \gn
+
+------------------------------------------------------------------------------
+                                                    *doctabs-features*
+2. Features~
+
+Current features:
+- Fast - keeping the plugin lightweight is a first-class priority
+- Feels like your document is split into sections
+- Renders a tab line showing the active section
+- Customizable section pattern
+- Optionally keeps independent context (window and cursor position) for each section
+- Optionally fold away sections other than the active one
+- Navigation functions and shortcuts similar to GNU screen:
+  Jump to sections 0-9
+  Jump to next, previous section
+  Jump to last (alternate) section in stack
+
+Planned features:
+- Add optional global highlighting of section headings
+- Handle overflow rendering better
+
+------------------------------------------------------------------------------
+                                                    *doctabs-requirements*
+3. Requirements~
+
+DocTabs requires vim 7.3 or later.
+
+By default, DocTabs takes over the tabline, so if tabs are part of
+your workflow or you use plugins like buftabline/airline, you may
+get conflicting behavior. This behavior can be disabled by setting
+
+let g:doctabs_use_tabline = 0
+
+in your .vimrc.
+
+------------------------------------------------------------------------------
+                                                    *doctabs-install*
+4. Installation~
+
+If you are using Pathogen, just clone this repo into ~/.vim/bundle, restart
+vim, and run :Helptags
+
+If you are not using pathogen, download the files in this repo and put them in
+your ~/.vim folder:
+autoload/dtab.vim   ->  ~/.vim/autoload/dtab.vim
+doc/doctabs.txt     ->  ~/.vim/doc/doctabs.txt
+plugin/doctabs.vim  ->  ~/.vim/plugin/doctabs.vim
+then run :helptags (notice the different case).
+
+But instead of doing the above manual procedure, you should really consider
+using Pathogen or another similar plugin manager. Using a plugin manager lets
+you install, upgrade, or remove plugins easily, and keep them separate from
+each other.
+
+------------------------------------------------------------------------------
+                                                    *doctabs-usage*
+5. Usage~
+
+Start by splitting up your document into sections using section headers. By
+default, these look like:
+
+###Section
+
+Navigating is very simple. You use the following shortcuts:
+
+    <Leader>g0..9   Jump to section 0..9
+    <Leader>gn      Jump to next section
+    <Leader>gp      Jump to previous section
+    <Leader>gg      Jump to alternate section
+
+If you have used screen, tmux, or vim's built-in window switching,
+this paradigm should be familiar. If you've only used vim's switching, the 
+
+screen or tmux, this switching paradigm should be amply familiar
+
+However, I find using the Ctrl-g prefix much more ergonomic. If you already
+display your document position in your statusline, chances are you don't need
+Ctrl-g. Using it means you use different hands to perform the next/prev
+shortcuts, and can type the chord repeatedly to toggle between the two most
+recent section.
+ 
+If you want to use Ctrl-g as a switching prefix, there is an optional helper
+command to set up those shortcuts. Just add this to your ~/vimrc:
+
+    call dtab#dtCgBindings()
+
+Or you can define the mappings directly in your ~/.vimrc with:
+
+    nnoremap <silent> <C-g>0        :call DocTabsJump(0)<CR>
+    nnoremap <silent> <C-g>1        :call DocTabsJump(1)<CR>
+    nnoremap <silent> <C-g>2        :call DocTabsJump(2)<CR>
+    nnoremap <silent> <C-g>3        :call DocTabsJump(3)<CR>
+    nnoremap <silent> <C-g>4        :call DocTabsJump(4)<CR>
+    nnoremap <silent> <C-g>5        :call DocTabsJump(5)<CR>
+    nnoremap <silent> <C-g>6        :call DocTabsJump(6)<CR>
+    nnoremap <silent> <C-g>7        :call DocTabsJump(7)<CR>
+    nnoremap <silent> <C-g>8        :call DocTabsJump(8)<CR>
+    nnoremap <silent> <C-g>9        :call DocTabsJump(9)<CR>
+    nnoremap <silent> <C-g><C-g>    :call DocTabsAlt()<CR>
+    nnoremap <silent> <C-g><C-n>    :call DocTabsNext()<CR>
+    nnoremap <silent> <C-g><C-p>    :call DocTabsPrev()<CR>
+    nnoremap <silent> <C-g>n        :call DocTabsNext()<CR>
+    nnoremap <silent> <C-g>p        :call DocTabsPrev()<CR>
+
+------------------------------------------------------------------------------
+                                                    *doctabs-options*
+6. Options~
+
+You can configure DocTabs with the following options:
+
+6.1. g:doctabs_default_pattern~
+
+g:doctabs_default_pattern is the pattern DocTabs uses to find section
+headings, unless a filetype-specific override has been specified
+(see next option). Don't set this to a common string or a small
+unit like a function, or DocTabs will show you too many small
+sections. Use this for headings, classes, etc. Default value is:
+
+    let g:doctabs_default_pattern = '###\([a-zA-Z0-9_:-]\+\)'
+
+The last capture group from the pattern is used to set the section
+name. If there are no capture groups, the whole match will be the
+section name.
+
+6.2. g:doctabs_filetype_patterns~
+
+g:doctabs_filetype_patterns has overrides for specific file types.
+To add a new one, simply add a dictionary like this in your ~/.vimrc.
+It will be merged with the default one.
+
+    let g:doctabs_filetype_defaults = {
+                \'help':    '^[0-9]\+\. \(.*\)\~',
+                \}
+
+6.3. g:doctabs_default_section~
+
+If there are any lines at the top of the file before a section
+heading, they will go into the default section. The default name
+is:
+
+    let g:doctabs_default_section = '~Top'
+
+6.4. g:doctabs_number_tabs~
+
+g:doctabs_number_tabs controls whether tabs are numbered when
+rendering. By default, this is on:
+
+    let g:doctabs_number_tabs = 1
+
+6.5. g:doctabs_section_views~
+
+Whether to preserve the editing context of each section, including
+line number, column number, which lines of the buffer are visible,
+etc. When you jump to a section with a movement command or a search,
+your cursor position is not touched, only when you jump with a
+keybinding. If you switch this off, the only thing DocTabs will do
+is render the tabline to show the current section. Default is on:
+
+    let g:doctabs_section_views = 1
+
+6.6. g:doctabs_fold_others~
+
+If you enable g:doctabs_fold_others, DocTabs will fold away all sections of the file except the current one. Off by default. You can enable it with:
+
+    let g:doctabs_fold_others = 1
+
+------------------------------------------------------------------------------
+                                                    *doctabs-license*
+7. License~
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+------------------------------------------------------------------------------
+
+vim:tw=78:sw=4:ft=help:norl:
