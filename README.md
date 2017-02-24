@@ -16,5 +16,7 @@ DocTabs plugin and documentation were both written using DocTabs.
 
 For more information, check out doc/doctabs.txt
 
+![alt tag](https://jbarbero.github.io/img/doctabs.png)
+
 DocTabs is released under the GNU General Public License, version 3.
 
