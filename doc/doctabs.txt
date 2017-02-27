@@ -120,21 +120,21 @@ command to set up those shortcuts. Just add this to your ~/vimrc:
 
 Or you can define the mappings directly in your ~/.vimrc with:
 
-    nnoremap <silent> <C-g>0        :call DocTabsJump(0)<CR>
-    nnoremap <silent> <C-g>1        :call DocTabsJump(1)<CR>
-    nnoremap <silent> <C-g>2        :call DocTabsJump(2)<CR>
-    nnoremap <silent> <C-g>3        :call DocTabsJump(3)<CR>
-    nnoremap <silent> <C-g>4        :call DocTabsJump(4)<CR>
-    nnoremap <silent> <C-g>5        :call DocTabsJump(5)<CR>
-    nnoremap <silent> <C-g>6        :call DocTabsJump(6)<CR>
-    nnoremap <silent> <C-g>7        :call DocTabsJump(7)<CR>
-    nnoremap <silent> <C-g>8        :call DocTabsJump(8)<CR>
-    nnoremap <silent> <C-g>9        :call DocTabsJump(9)<CR>
-    nnoremap <silent> <C-g><C-g>    :call DocTabsAlt()<CR>
-    nnoremap <silent> <C-g><C-n>    :call DocTabsNext()<CR>
-    nnoremap <silent> <C-g><C-p>    :call DocTabsPrev()<CR>
-    nnoremap <silent> <C-g>n        :call DocTabsNext()<CR>
-    nnoremap <silent> <C-g>p        :call DocTabsPrev()<CR>
+    nnoremap <silent> <C-g>0 :call dtab#dtJump(0)<CR>
+    nnoremap <silent> <C-g>1 :call dtab#dtJump(1)<CR>
+    nnoremap <silent> <C-g>2 :call dtab#dtJump(2)<CR>
+    nnoremap <silent> <C-g>3 :call dtab#dtJump(3)<CR>
+    nnoremap <silent> <C-g>4 :call dtab#dtJump(4)<CR>
+    nnoremap <silent> <C-g>5 :call dtab#dtJump(5)<CR>
+    nnoremap <silent> <C-g>6 :call dtab#dtJump(6)<CR>
+    nnoremap <silent> <C-g>7 :call dtab#dtJump(7)<CR>
+    nnoremap <silent> <C-g>8 :call dtab#dtJump(8)<CR>
+    nnoremap <silent> <C-g>9 :call dtab#dtJump(9)<CR>
+    nnoremap <silent> <C-g><C-g> :call dtab#dtJumpAlt()<CR>
+    nnoremap <silent> <C-g><C-n> :call dtab#dtJumpNext()<CR>
+    nnoremap <silent> <C-g><C-p> :call dtab#dtJumpPrev()<CR>
+    nnoremap <silent> <C-g>n :call dtab#dtJumpNext()<CR>
+    nnoremap <silent> <C-g>p :call dtab#dtJumpPrev()<CR>
 
 ------------------------------------------------------------------------------
                                                     *doctabs-options*
