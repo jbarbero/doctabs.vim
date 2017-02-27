@@ -104,9 +104,8 @@ Navigating is very simple. You use the following shortcuts:
     <Leader>gg      Jump to alternate section
 
 If you have used screen, tmux, or vim's built-in window switching,
-this paradigm should be familiar. If you've only used vim's switching, the 
-
-screen or tmux, this switching paradigm should be amply familiar
+this paradigm should be familiar. If you've only used vim's switching,
+jumping directly to a section by number should be the only new idea.
 
 However, I find using the Ctrl-g prefix much more ergonomic. If you already
 display your document position in your statusline, chances are you don't need
