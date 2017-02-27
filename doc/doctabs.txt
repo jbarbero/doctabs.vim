@@ -194,7 +194,9 @@ is render the tabline to show the current section. Default is on:
 
 6.6. g:doctabs_fold_others~
 
-If you enable g:doctabs_fold_others, DocTabs will fold away all sections of the file except the current one. Off by default. You can enable it with:
+If you enable g:doctabs_fold_others, DocTabs will fold away all
+sections of the file except the current one. Off by default. You
+can enable it with:
 
     let g:doctabs_fold_others = 1
 
