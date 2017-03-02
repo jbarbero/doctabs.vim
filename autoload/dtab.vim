@@ -43,8 +43,26 @@ function! dtab#dtComputeSections()
     if has_key(g:doctabs_filetype_patterns, &filetype)
         let pattern = g:doctabs_filetype_patterns[&filetype]
     endif
+    
+    " Highlight section titles
 
-    let b:sections_old = get(b:, 'sections', [])
+    " First clear any matches
+    let match_old = get(b:, 'dtmatch', -1)
+    " Ignore -1 or reserved matches 1-3
+    if match_old > 3
+        call matchdelete(match_old)
+    endif
+
+    " Then add a match if the user pref is set
+    if g:doctabs_highlight_headings == 1
+        let b:dtmatch = matchadd("Title", pattern)
+    endif
+
+    let views_old = {}
+    for [tagname, tagpos, tagend, tagview] in get(b:, 'sections', [])
+        let views_old[tagname] = tagview
+    endfor
+
     " TODO handle section renames, insertions, etc
 
     let b:sections = []
@@ -65,7 +83,8 @@ function! dtab#dtComputeSections()
                 let tagname = matchgroup
             endif
         endfor
-        let b:sections += [[tagname, tagpos, '$', {}]]
+        let oldview = get(views_old, tagname, {})
+        let b:sections += [[tagname, tagpos, '$', oldview]]
         
         if ii > 0
             let b:sections[-2][2] = tagpos - 1
@@ -221,16 +240,6 @@ function! dtab#dtJump(newsection)
         echoerr 'Invalid section "' . a:newsection . '": no such section'
         return
     end
-
-    " TODO:
-    "   lnum        cursor line number
-    "   col         cursor column
-    "   coladd      (cursor column offset for 'virtualedit')
-    "   curswant    (column for vertical movement)
-    "   topline     first line in the window
-    "   topfill     okay to default to 0
-    "   leftcol     first column to display, okay to default to 1
-    "   skipcol     (columns skipped)
 
     " TODO: figure out the logic of command jumps vs normal jumps
     if g:doctabs_section_views

@@ -200,6 +200,14 @@ can enable it with:
 
     let g:doctabs_fold_others = 1
 
+6.7. g:doctabs_highlight_headings~
+
+Whether to highlight section headings. These match based on
+g:doctabs_default_pattern, and give you a visual indication of where
+sections start. On by default:
+
+    let g:doctabs_highlight_headings = 1
+
 ------------------------------------------------------------------------------
                                                     *doctabs-license*
 7. License~

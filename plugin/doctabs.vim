@@ -17,6 +17,7 @@
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "
 " Versions:
+" 0.5   Highlight section headings
 " 0.4   Optional folding of other sections
 " 0.3   Navigation functions to switch between sections
 " 0.2   Save context for each section
@@ -29,7 +30,6 @@
 " - Handle overflow rendering
 " - Handle section changes due to lines changing, not just writes. Decide
 "   which file updates will trigger this.
-" - Get feedback on vi-users@google, vim.org/scripts
 "
 " Optional:
 " - Make which group to use configurable?
@@ -46,17 +46,20 @@
 "
 
 " Config
-let g:doctabs_default_pattern   = get(g:, 'doctabs_default_pattern',    '###\([a-zA-Z0-9_:-]\+\)')
-let g:doctabs_filetype_defaults = {
+let g:doctabs_default_pattern    = get(g:, 'doctabs_default_pattern',    '###\([a-zA-Z0-9_:-]\+\)')
+let g:doctabs_filetype_defaults  = {
             \'help':    '^[0-9]\+\. \(.*\)\~',
             \}
+let g:doctabs_filetype_patterns  = g:doctabs_filetype_defaults
+let g:doctabs_default_section    = get(g:, 'doctabs_default_section',    '~Top')
+let g:doctabs_number_tabs        = get(g:, 'doctabs_number_tabs',        1)
+let g:doctabs_section_views      = get(g:, 'doctabs_section_views',      1)
+let g:doctabs_fold_others        = get(g:, 'doctabs_fold_others',        0)
+let g:doctabs_highlight_headings = get(g:, 'doctabs_highlight_headings', 1)
+
+" Merge user filetype patterns into default
 call extend(g:doctabs_filetype_defaults,
             \ get(g:, 'doctabs_filetype_patterns', {}))
-let g:doctabs_filetype_patterns = g:doctabs_filetype_defaults
-let g:doctabs_default_section   = get(g:, 'doctabs_default_section',    '~Top')
-let g:doctabs_number_tabs       = get(g:, 'doctabs_number_tabs',        1)
-let g:doctabs_section_views     = get(g:, 'doctabs_section_views',      1)
-let g:doctabs_fold_others       = get(g:, 'doctabs_fold_others',        0)
 
 " Autocommands
 augroup doctabs
