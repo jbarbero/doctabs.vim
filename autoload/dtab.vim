@@ -53,7 +53,7 @@ function! dtab#dtComputeSections()
         call matchdelete(match_old)
     endif
 
-    " Then add a match if the user pref is set
+    " Then add a match if highlighting is on
     if g:doctabs_highlight_headings == 1
         let b:dtmatch = matchadd("Title", pattern)
     endif
@@ -241,14 +241,16 @@ function! dtab#dtJump(newsection)
         return
     end
 
-    " TODO: figure out the logic of command jumps vs normal jumps
     if g:doctabs_section_views
+        " Save old view
         let b:sections[w:section][3] = winsaveview() 
+        " with lnum relative to tagstart
+        " let b:sections[w:section][3]['lnum'] -= b:sections[w:section][1]
 
         let [name, tagstart, tagend, tagview] = b:sections[a:newsection]
 
         let restore = {
-                    \ 'lnum':      get(tagview,  'lnum',      tagstart),
+                    \ 'lnum':      get(tagview,  'lnum',      0),
                     \ 'col':       get(tagview,  'col',       1),
                     \ 'topline':   get(tagview,  'topline',   tagstart),
                     \ 'topfill':   get(tagview,  'topfill',   0),
@@ -257,6 +259,17 @@ function! dtab#dtJump(newsection)
                     " \ 'coladd':    get(tagview,  'coladd',    -1),
                     " \ 'curswant':  get(tagview,  'curswant',  -1),
                     " \ 'skipcol':   get(tagview,  'skipcol',   -1),
+
+        " Sanity check that lnum is between tagstart and tagend
+        if restore['lnum'] < tagstart || restore['lnum'] > tagend
+            let restore['lnum'] = tagstart
+        endif
+        
+        " Sanity check that topline is between tagstart and tagend
+        if restore['topline'] < tagstart || restore['topline'] > tagend
+            let restore['topline'] = tagstart
+        endif
+
         call winrestview(restore)
     endif
 
