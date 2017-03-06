@@ -57,6 +57,9 @@ let g:doctabs_section_views      = get(g:, 'doctabs_section_views',      1)
 let g:doctabs_fold_others        = get(g:, 'doctabs_fold_others',        0)
 let g:doctabs_highlight_headings = get(g:, 'doctabs_highlight_headings', 1)
 
+" Internal flags
+let g:_doctabs_save_view_on_move = get(g:, '_doctabs_save_view_on_move', 0)
+
 " Merge user filetype patterns into default
 call extend(g:doctabs_filetype_defaults,
             \ get(g:, 'doctabs_filetype_patterns', {}))

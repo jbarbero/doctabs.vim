@@ -178,7 +178,11 @@ function! dtab#dtInit()
 
         augroup doctabs
         if g:doctabs_section_views
-            au! CursorMoved * let w:newline = line('.') | if w:curline != w:newline | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) | call dtab#dtSectionMoved(1) | else | if g:doctabs_section_views | let b:sections[w:section][3] = winsaveview() | endif | endif | let w:curline = w:newline | endif
+            if g:_doctabs_save_view_on_move
+                au! CursorMoved * let w:newline = line('.') | if w:curline != w:newline | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) | call dtab#dtSectionMoved(1) | else | if g:doctabs_section_views | let b:sections[w:section][3] = winsaveview() | endif | endif | let w:curline = w:newline | endif
+            else
+                au! CursorMoved * let w:newline = line('.') | if w:curline != w:newline | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) | call dtab#dtSectionMoved(0) | endif | let w:curline = w:newline | endif
+            endif
         else
             au! CursorMoved * let w:newline = line('.') | if w:curline != w:newline | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) | call dtab#dtSectionMoved(1) | endif | let w:curline = w:newline | endif
         endif
@@ -199,7 +203,7 @@ endfunction
 
 
 " Update on section move
-function! dtab#dtSectionMoved(manual)
+function! dtab#dtSectionMoved(restore)
     let [w:newsection, w:curtag, w:tagstart, w:tagend, w:sectionview] = dtab#dtGetCurrentSection()
     
     if g:doctabs_fold_others
@@ -213,7 +217,7 @@ function! dtab#dtSectionMoved(manual)
     let w:lastsection = w:section
     let w:section = w:newsection
 
-    if a:manual && g:doctabs_section_views
+    if a:restore && g:doctabs_section_views
         " Restore everything except cursor position - the user knows where
         " they're going
         let curview = winsaveview()
@@ -244,6 +248,7 @@ function! dtab#dtJump(newsection)
     if g:doctabs_section_views
         " Save old view
         let b:sections[w:section][3] = winsaveview() 
+        echom "Saved view"
         " with lnum relative to tagstart
         " let b:sections[w:section][3]['lnum'] -= b:sections[w:section][1]
 
@@ -261,12 +266,12 @@ function! dtab#dtJump(newsection)
                     " \ 'skipcol':   get(tagview,  'skipcol',   -1),
 
         " Sanity check that lnum is between tagstart and tagend
-        if restore['lnum'] < tagstart || restore['lnum'] > tagend
+        if restore['lnum'] < tagstart || (tagend != '$' && restore['lnum'] > tagend)
             let restore['lnum'] = tagstart
         endif
         
         " Sanity check that topline is between tagstart and tagend
-        if restore['topline'] < tagstart || restore['topline'] > tagend
+        if restore['topline'] < tagstart || (tagend != '$' && restore['topline'] > tagend)
             let restore['topline'] = tagstart
         endif
 
