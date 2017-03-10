@@ -47,15 +47,15 @@ function! dtab#dtComputeSections()
     " Highlight section titles
 
     " First clear any matches
-    let match_old = get(b:, 'dtmatch', -1)
+    let match_old = get(w:, 'dtmatch', -1)
     " Ignore -1 or reserved matches 1-3
     if match_old > 3
-        call matchdelete(match_old)
+        silent call matchdelete(match_old)
     endif
 
     " Then add a match if highlighting is on
     if g:doctabs_highlight_headings == 1
-        let b:dtmatch = matchadd("Title", pattern)
+        let w:dtmatch = matchadd("Title", pattern)
     endif
 
     let views_old = {}
