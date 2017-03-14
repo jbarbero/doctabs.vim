@@ -28,6 +28,7 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
+" - Allow sections to be moved and renumbered like screen windows
 " - Handle tabline click to select section in terminal and gui vim
 " - Better section patterns to cover all vim help file formats
 " - Handle section changes due to lines changing, not just writes. Decide
