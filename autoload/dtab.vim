@@ -248,7 +248,6 @@ function! dtab#dtJump(newsection)
     if g:doctabs_section_views
         " Save old view
         let b:sections[w:section][3] = winsaveview() 
-        echom "Saved view"
         " with lnum relative to tagstart
         " let b:sections[w:section][3]['lnum'] -= b:sections[w:section][1]
 
