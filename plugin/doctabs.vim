@@ -28,8 +28,7 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
-" - Handle click to select section in terminal and gui vim
-" - Alphanumeric labels to allow easy switching to more than 10 sections
+" - Handle tabline click to select section in terminal and gui vim
 " - Better section patterns to cover all vim help file formats
 " - Handle section changes due to lines changing, not just writes. Decide
 "   which file updates will trigger this.

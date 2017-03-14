@@ -47,12 +47,13 @@ Current features:
 - Optionally fold away sections other than the active one
 - Navigation functions and shortcuts similar to GNU screen:
   Jump to sections 0-9
+  Jump to sections 10+ fast with alphanumeric labels
   Jump to next, previous section
   Jump to last (alternate) section in stack
+- Section headings are highlighted
 
 Planned features:
-- Add optional global highlighting of section headings
-- Handle overflow rendering better
+- Handle tabline click to select section in terminal and gui vim
 
 ------------------------------------------------------------------------------
                                                     *doctabs-requirements*
