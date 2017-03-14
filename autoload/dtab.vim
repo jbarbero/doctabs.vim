@@ -17,9 +17,8 @@
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-" ###SectionFuncs
-
 " Find current section and return its entry
+" ###GetCurrentSection
 function! dtab#dtGetCurrentSection()
     let curline = line('.')
     let ii = 0
@@ -34,6 +33,7 @@ endfunction
 
 
 " Compute section start/end positions on write
+" ###ComputeSections
 function! dtab#dtComputeSections()
     " Save window view and cursor position, reset at end
     let view = winsaveview()
@@ -122,18 +122,20 @@ endfunction
 
 
 " Render tabline and highlight current section
+" ###dtRenderTabline
 function! dtab#dtRenderTabline()
     set showtabline=2
 
     let line = ''
+
+    let parts = ['', '', '']
     
     let curline = line('.')
     let ii = 0
+    let which = 0
     for [tagname, tagpos, endpos, sectionview] in b:sections
         if curline >= tagpos && (endpos == '$' || curline <= endpos)
-            let line .= '%#TabLineSel#'
-        else
-            let line .= '%#TabLine#'
+            let which = 1
         endif
 
         let name = tagname
@@ -141,21 +143,49 @@ function! dtab#dtRenderTabline()
             let name = ii . ':' . name
         endif
 
-        let line .= ' ' . name . ' '
+        let parts[which] .= ' ' . name . ' '
+
+        if which == 1
+            let which = 2
+        endif
 
         let ii += 1
     endfor
 
-    " debugging
-    " let line .= ' ' . strftime("%c")
+    let linelen = len(parts[0]) + len(parts[1]) + len(parts[2])
+    if len(parts[1]) >= &columns
+        let parts[0] = ''
+        let parts[1] = strpart(parts[1], 0, &columns)
+        let parts[2] = ''
+    elseif linelen > &columns
+        let rem = &columns - len(parts[1])
+        let sizeleft = rem / 2
+        let sizeright = rem - sizeleft
+        if sizeleft > len(parts[0])
+            let sizeleft = len(parts[0])
+            let sizeright = rem - sizeleft
+        elseif sizeright > len(parts[2])
+            let sizeright = len(parts[2])
+            let sizeleft = rem - sizeright
+        end
+        
+        if len(parts[0]) > sizeleft
+            let parts[0] = '<' . strpart(parts[0], len(parts[0]) - sizeleft + 1, sizeleft - 1)
+        endif
 
-    let line .= '%#TabLineFill#'
+        if len(parts[2]) > sizeright
+            let parts[2] = strpart(parts[2], 0, sizeright - 1) . '>'
+        endif
+    endif
+
+    let line = '%#TabLine#' . parts[0] . '%#TabLineSel#' . parts[1] . '%#TabLine#' . parts[2] . '%#TabLineFill#'
 
     let &l:tabline = line
 endfunction
 
 
 " Set up plugin state
+" ###dtInit
 function! dtab#dtInit()
     call dtab#dtComputeSections()
 
@@ -194,6 +224,7 @@ endfunction
 
 
 " Update on window enter
+" ###dtWindowInit
 function! dtab#dtWindowInit()
     let [w:section, w:curtag, w:tagstart, w:tagend, w:sectionview] = dtab#dtGetCurrentSection()
     let w:lastsection = get(w:, 'lastsection', -1)
@@ -203,6 +234,7 @@ endfunction
 
 
 " Update on section move
+" ###dtSectionMoved
 function! dtab#dtSectionMoved(restore)
     let [w:newsection, w:curtag, w:tagstart, w:tagend, w:sectionview] = dtab#dtGetCurrentSection()
     
@@ -230,9 +262,8 @@ function! dtab#dtSectionMoved(restore)
     call dtab#dtRenderTabline()
 endfunction
 
-" ###JumpFuncs
-
 " Jump to given section
+" ###dtJump
 function! dtab#dtJump(newsection)
     if type(a:newsection) != type(0)
         echoerr 'Invalid section "' . a:newsection . '": number required'
@@ -282,6 +313,7 @@ endfunction
 
 
 " Jump to alternate section
+" ###dtJumpAlt
 function! dtab#dtJumpAlt()
     if w:lastsection == -1
         echoerr 'No alternate section yet (did you just open this window?)'
@@ -293,18 +325,21 @@ endfunction
 
 
 " Jump to next section
+" ###dtJumpNext
 function! dtab#dtJumpNext()
     call dtab#dtJump((w:section + 1) % len(b:sections))
 endfunction
 
 
 " Jump to previous section
+" ###dtJumpPrev
 function! dtab#dtJumpPrev()
     call dtab#dtJump((len(b:sections) + w:section - 1) % len(b:sections))
 endfunction
 
 
 " Set up C-g keybindings
+" ###dtCgBindings
 function! dtab#dtCgBindings()
     nnoremap <silent> <C-g>0 :call dtab#dtJump(0)<CR>
     nnoremap <silent> <C-g>1 :call dtab#dtJump(1)<CR>

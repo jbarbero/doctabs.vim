@@ -17,7 +17,8 @@
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "
 " Versions:
-" 0.5   Highlight section headings
+" 0.6   Handle tabline overflow rendering
+" 0.5   Highlight section headings, only update views when using jumps
 " 0.4   Optional folding of other sections
 " 0.3   Navigation functions to switch between sections
 " 0.2   Save context for each section
@@ -26,12 +27,13 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
-" - TODO: better section patterns to cover all help file formats?
-" - Handle overflow rendering
+" - Alphanumeric labels to allow easy switching to more than 10 sections
+" - Better section patterns to cover all vim help file formats
 " - Handle section changes due to lines changing, not just writes. Decide
 "   which file updates will trigger this.
 "
 " Optional:
+" - Window switching menu
 " - Make which group to use configurable?
 " - Make tabline use optional (g:doctabs_use_tabline)
 " - Multi-document tabline
@@ -39,10 +41,6 @@
 " - Deal with switching between windows, i.e. allow a section to be
 "   transparently pinned to a given window
 " - Add signs (visual marks) to denote sections
-"
-" Known_issues:
-" Right now, the plugin scans the whole file on buffer switch. That seems wasteful.
-" Do something nicer than blanking tabline if all sections disappear
 "
 
 " Config
