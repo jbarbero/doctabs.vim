@@ -17,6 +17,7 @@
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "
 " Versions:
+" 0.7   Allow alphanumeric tab labels for easier switching
 " 0.6   Handle tabline overflow rendering
 " 0.5   Highlight section headings, only update views when using jumps
 " 0.4   Optional folding of other sections
@@ -27,13 +28,15 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
+" - Handle click to select section in terminal and gui vim
 " - Alphanumeric labels to allow easy switching to more than 10 sections
 " - Better section patterns to cover all vim help file formats
 " - Handle section changes due to lines changing, not just writes. Decide
 "   which file updates will trigger this.
+" - Keep old value of showtabline around, use it if no sections remain
 "
 " Optional:
-" - Window switching menu
+" - Section switching menu or window
 " - Make which group to use configurable?
 " - Make tabline use optional (g:doctabs_use_tabline)
 " - Multi-document tabline
@@ -51,12 +54,17 @@ let g:doctabs_filetype_defaults  = {
 let g:doctabs_filetype_patterns  = g:doctabs_filetype_defaults
 let g:doctabs_default_section    = get(g:, 'doctabs_default_section',    '~Top')
 let g:doctabs_number_tabs        = get(g:, 'doctabs_number_tabs',        1)
+let g:doctabs_alpha_labels       = get(g:, 'doctabs_alpha_labels',       1)
 let g:doctabs_section_views      = get(g:, 'doctabs_section_views',      1)
 let g:doctabs_fold_others        = get(g:, 'doctabs_fold_others',        0)
 let g:doctabs_highlight_headings = get(g:, 'doctabs_highlight_headings', 1)
 
 " Internal flags
 let g:_doctabs_save_view_on_move = get(g:, '_doctabs_save_view_on_move', 0)
+let g:_doctabs_user_bindings     = get(g:, '_doctabs_user_bindings',     'leader')
+
+" All numbers and letters except those used for keybindings: n, p, g, N, P, G
+let g:doctabs_labels = '0123456789qwertyuioasdfhjklzxcvbmQWERTYUIOASDFHJKLZXCVBM'
 
 " Merge user filetype patterns into default
 call extend(g:doctabs_filetype_defaults,
@@ -72,17 +80,8 @@ au! WinEnter * call dtab#dtWindowInit()
 augroup END
 
 " Default keybindings with <Leader>
-nnoremap <silent> <Leader>g0 :call dtab#dtJump(0)<CR>
-nnoremap <silent> <Leader>g1 :call dtab#dtJump(1)<CR>
-nnoremap <silent> <Leader>g2 :call dtab#dtJump(2)<CR>
-nnoremap <silent> <Leader>g3 :call dtab#dtJump(3)<CR>
-nnoremap <silent> <Leader>g4 :call dtab#dtJump(4)<CR>
-nnoremap <silent> <Leader>g5 :call dtab#dtJump(5)<CR>
-nnoremap <silent> <Leader>g6 :call dtab#dtJump(6)<CR>
-nnoremap <silent> <Leader>g7 :call dtab#dtJump(7)<CR>
-nnoremap <silent> <Leader>g8 :call dtab#dtJump(8)<CR>
-nnoremap <silent> <Leader>g9 :call dtab#dtJump(9)<CR>
-nnoremap <silent> <Leader>gg :call dtab#dtJumpAlt()<CR>
-nnoremap <silent> <Leader>gn :call dtab#dtJumpNext()<CR>
-nnoremap <silent> <Leader>gp :call dtab#dtJumpPrev()<CR>
+call dtab#dtBindings('leader')
+if g:_doctabs_user_bindings != 'leader'
+    call dtab#dtBindings(g:_doctabs_user_bindings)
+end
 

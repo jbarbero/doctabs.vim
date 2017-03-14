@@ -16,7 +16,6 @@
 " You should have received a copy of the GNU General Public License
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 " Find current section and return its entry
 " ###GetCurrentSection
 function! dtab#dtGetCurrentSection()
@@ -139,7 +138,14 @@ function! dtab#dtRenderTabline()
         endif
 
         let name = tagname
-        if g:doctabs_number_tabs
+        if g:doctabs_alpha_labels
+            let labels = split(g:doctabs_labels, '\zs')
+            if ii < len(labels)
+                let name = labels[ii] . ':' . name
+            else
+                let name = ii . ':' . name
+            endif
+        elseif g:doctabs_number_tabs
             let name = ii . ':' . name
         endif
 
@@ -337,24 +343,42 @@ function! dtab#dtJumpPrev()
     call dtab#dtJump((len(b:sections) + w:section - 1) % len(b:sections))
 endfunction
 
+" Set up <Leader> keybindings
+" ###dtLeaderBindings
+function! dtab#dtBindings(which)
+    if a:which == 'leader'
+        nnoremap <silent> <Leader>gg :call dtab#dtJumpAlt()<CR>
+        nnoremap <silent> <Leader>gn :call dtab#dtJumpNext()<CR>
+        nnoremap <silent> <Leader>gp :call dtab#dtJumpPrev()<CR>
+    elseif a:which == 'cg'
+        nnoremap <silent> <C-g><C-g> :call dtab#dtJumpAlt()<CR>
+        nnoremap <silent> <C-g><C-n> :call dtab#dtJumpNext()<CR>
+        nnoremap <silent> <C-g><C-p> :call dtab#dtJumpPrev()<CR>
+        nnoremap <silent> <C-g>n :call dtab#dtJumpNext()<CR>
+        nnoremap <silent> <C-g>p :call dtab#dtJumpPrev()<CR>
+    end
+
+    let labels = split('0123456789', '\zs')
+    if g:doctabs_alpha_labels
+        let labels = split(g:doctabs_labels, '\zs')
+    end
+
+    let ii = 0
+    for label in labels
+        if a:which == 'leader'
+            execute 'nnoremap <silent> <Leader>g' . label . ' :call dtab#dtJump(' . ii . ')<CR>'
+        elseif a:which == 'cg'
+            execute 'nnoremap <silent> <C-g>' . label . ' :call dtab#dtJump(' . ii . ')<CR>'
+        end
+        let ii += 1
+    endfor
+endfunction
 
 " Set up C-g keybindings
 " ###dtCgBindings
 function! dtab#dtCgBindings()
-    nnoremap <silent> <C-g>0 :call dtab#dtJump(0)<CR>
-    nnoremap <silent> <C-g>1 :call dtab#dtJump(1)<CR>
-    nnoremap <silent> <C-g>2 :call dtab#dtJump(2)<CR>
-    nnoremap <silent> <C-g>3 :call dtab#dtJump(3)<CR>
-    nnoremap <silent> <C-g>4 :call dtab#dtJump(4)<CR>
-    nnoremap <silent> <C-g>5 :call dtab#dtJump(5)<CR>
-    nnoremap <silent> <C-g>6 :call dtab#dtJump(6)<CR>
-    nnoremap <silent> <C-g>7 :call dtab#dtJump(7)<CR>
-    nnoremap <silent> <C-g>8 :call dtab#dtJump(8)<CR>
-    nnoremap <silent> <C-g>9 :call dtab#dtJump(9)<CR>
-    nnoremap <silent> <C-g><C-g> :call dtab#dtJumpAlt()<CR>
-    nnoremap <silent> <C-g><C-n> :call dtab#dtJumpNext()<CR>
-    nnoremap <silent> <C-g><C-p> :call dtab#dtJumpPrev()<CR>
-    nnoremap <silent> <C-g>n :call dtab#dtJumpNext()<CR>
-    nnoremap <silent> <C-g>p :call dtab#dtJumpPrev()<CR>
+    " We don't actually set any bindings here, as the exact bindings depend on
+    " g:doctabs_alpha_labels, which is not necessarily loaded at ~/.vimrc time
+    let g:_doctabs_user_bindings = 'cg'
 endfunction
 
