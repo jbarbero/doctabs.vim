@@ -208,6 +208,19 @@ sections start. On by default:
 
     let g:doctabs_highlight_headings = 1
 
+6.8. g:doctabs_alpha_labels~
+
+Whether to extend the tab labels beyond 0-9 with qwert... labels. This also
+activates keybindings for those, so you can switch to section 10 with
+<Leader>gq, section 11 with <Leader>gw, and so on. When used in conjunction
+with calling dtab#dtCgBindings() in your ~/.vimrc (see section 5, Usage),
+activates <C-g> prefix bindings, such as <C-g>q, <C-g>w, etc.
+
+This option makes it much easier to manage more than 10 sections in your
+document, and is on by default.
+
+    let g:doctabs_alpha_labels = 1
+
 ------------------------------------------------------------------------------
                                                     *doctabs-license*
 7. License~
