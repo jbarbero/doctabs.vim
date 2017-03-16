@@ -318,7 +318,7 @@ endfunction
 " Jump to alternate section
 function! dtab#dtJumpAlt()
     if w:lastsection == -1
-        echoerr 'No alternate section yet (did you just open this window?)'
+        " echoerr 'No alternate section yet (did you just open this window?)'
         return
     endif
 

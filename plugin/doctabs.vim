@@ -45,6 +45,8 @@
 "   transparently pinned to a given window
 " - Add signs (visual marks) to denote sections
 "
+" KnownIssues:
+" - Section highlights only show up in one window when splitting
 
 " Config
 let g:doctabs_default_pattern    = get(g:, 'doctabs_default_pattern',    '###\([a-zA-Z0-9_:-]\+\)')
