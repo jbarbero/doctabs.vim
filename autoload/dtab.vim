@@ -16,8 +16,9 @@
 " You should have received a copy of the GNU General Public License
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+" ###Sections
+
 " Find current section and return its entry
-" ###GetCurrentSection
 function! dtab#dtGetCurrentSection()
     let curline = line('.')
     let ii = 0
@@ -32,7 +33,6 @@ endfunction
 
 
 " Compute section start/end positions on write
-" ###ComputeSections
 function! dtab#dtComputeSections()
     " Save window view and cursor position, reset at end
     let view = winsaveview()
@@ -119,9 +119,37 @@ function! dtab#dtComputeSections()
     endif
 endfunction
 
+" Update on section move
+function! dtab#dtSectionMoved(restore)
+    let [w:newsection, w:curtag, w:tagstart, w:tagend, w:sectionview] = dtab#dtGetCurrentSection()
+    
+    if g:doctabs_fold_others
+        set fdm=manual
+        let [oldtag, oldstart, oldend, oldview] = b:sections[w:section]
+        execute oldstart . ',' . oldend . 'foldclose'
+        execute w:tagstart . ',' . w:tagend . 'foldopen'
+        execute w:tagstart . ',' . w:tagend . 'foldopen'
+    endif
+
+    let w:lastsection = w:section
+    let w:section = w:newsection
+
+    if a:restore && g:doctabs_section_views
+        " Restore everything except cursor position - the user knows where
+        " they're going
+        let curview = winsaveview()
+        let w:sectionview['lnum'] = curview['lnum']
+        let w:sectionview['col'] = curview['col']
+        let w:sectionview['coladd'] = curview['coladd']
+        call winrestview(w:sectionview)
+    endif
+
+    call dtab#dtRenderTabline()
+endfunction
+
+" ###Rendering
 
 " Render tabline and highlight current section
-" ###dtRenderTabline
 function! dtab#dtRenderTabline()
     set showtabline=2
 
@@ -189,9 +217,9 @@ function! dtab#dtRenderTabline()
     let &l:tabline = line
 endfunction
 
+" ###Init
 
 " Set up plugin state
-" ###dtInit
 function! dtab#dtInit()
     call dtab#dtComputeSections()
 
@@ -228,9 +256,7 @@ function! dtab#dtInit()
     endif
 endfunction
 
-
 " Update on window enter
-" ###dtWindowInit
 function! dtab#dtWindowInit()
     let [w:section, w:curtag, w:tagstart, w:tagend, w:sectionview] = dtab#dtGetCurrentSection()
     let w:lastsection = get(w:, 'lastsection', -1)
@@ -238,38 +264,9 @@ function! dtab#dtWindowInit()
     call dtab#dtRenderTabline()
 endfunction
 
-
-" Update on section move
-" ###dtSectionMoved
-function! dtab#dtSectionMoved(restore)
-    let [w:newsection, w:curtag, w:tagstart, w:tagend, w:sectionview] = dtab#dtGetCurrentSection()
-    
-    if g:doctabs_fold_others
-        set fdm=manual
-        let [oldtag, oldstart, oldend, oldview] = b:sections[w:section]
-        execute oldstart . ',' . oldend . 'foldclose'
-        execute w:tagstart . ',' . w:tagend . 'foldopen'
-        execute w:tagstart . ',' . w:tagend . 'foldopen'
-    endif
-
-    let w:lastsection = w:section
-    let w:section = w:newsection
-
-    if a:restore && g:doctabs_section_views
-        " Restore everything except cursor position - the user knows where
-        " they're going
-        let curview = winsaveview()
-        let w:sectionview['lnum'] = curview['lnum']
-        let w:sectionview['col'] = curview['col']
-        let w:sectionview['coladd'] = curview['coladd']
-        call winrestview(w:sectionview)
-    endif
-
-    call dtab#dtRenderTabline()
-endfunction
+" ###Jumping
 
 " Jump to given section
-" ###dtJump
 function! dtab#dtJump(newsection)
     if type(a:newsection) != type(0)
         echoerr 'Invalid section "' . a:newsection . '": number required'
@@ -319,7 +316,6 @@ endfunction
 
 
 " Jump to alternate section
-" ###dtJumpAlt
 function! dtab#dtJumpAlt()
     if w:lastsection == -1
         echoerr 'No alternate section yet (did you just open this window?)'
@@ -331,20 +327,19 @@ endfunction
 
 
 " Jump to next section
-" ###dtJumpNext
 function! dtab#dtJumpNext()
     call dtab#dtJump((w:section + 1) % len(b:sections))
 endfunction
 
 
 " Jump to previous section
-" ###dtJumpPrev
 function! dtab#dtJumpPrev()
     call dtab#dtJump((len(b:sections) + w:section - 1) % len(b:sections))
 endfunction
 
+" ###Bindings
+
 " Set up <Leader> keybindings
-" ###dtLeaderBindings
 function! dtab#dtBindings(which)
     if a:which == 'leader'
         nnoremap <silent> <Leader>gg :call dtab#dtJumpAlt()<CR>
@@ -375,7 +370,6 @@ function! dtab#dtBindings(which)
 endfunction
 
 " Set up C-g keybindings
-" ###dtCgBindings
 function! dtab#dtCgBindings()
     " We don't actually set any bindings here, as the exact bindings depend on
     " g:doctabs_alpha_labels, which is not necessarily loaded at ~/.vimrc time
