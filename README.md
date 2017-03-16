@@ -1,3 +1,6 @@
+Overview
+--------
+
 DocTabs: a vim plugin for organizing a file into sections
 
 Author: Janos Barbero <jbarbero@cs.washington.edu>
@@ -17,7 +20,17 @@ documentation were both written using DocTabs.
 
 For more information, check out doc/doctabs.txt
 
+DocTabs is released under the GNU General Public License, version 3.
+
+Asciicast
+---------
+
+[![asciicast](https://asciinema.org/a/107382.png)](https://asciinema.org/a/107382)
+
+
+Screenshot
+----------
+
 ![alt tag](https://jbarbero.github.io/img/doctabs.png)
 
-DocTabs is released under the GNU General Public License, version 3.
 
