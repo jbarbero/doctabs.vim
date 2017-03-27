@@ -28,6 +28,9 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
+" - Allow user-specified keybinding prefix
+" - Allow sections to be used as text objects. See:
+"   https://github.com/b4winckler/vim-angry/blob/master/plugin/angry.vim
 " - Allow sections to be moved and renumbered like screen windows
 " - Handle tabline click to select section in terminal and gui vim
 " - Better section patterns to cover all vim help file formats
