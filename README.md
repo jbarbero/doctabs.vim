@@ -30,9 +30,3 @@ Asciicast
 [![asciicast](https://asciinema.org/a/107382.png)](https://asciinema.org/a/107382)
 
 
-Screenshot
-----------
-
-![alt tag](https://jbarbero.github.io/img/doctabs.png)
-
-
