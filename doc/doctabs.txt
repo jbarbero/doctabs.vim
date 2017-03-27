@@ -20,12 +20,12 @@ Send flames to: Janos Barbero <jbarbero@cs.washington.edu>
 
 DocTabs is like having screen/tmux for a single buffer. Vim already lets you
 manage different buffers very efficiently, but within a buffer you are limited
-to jumping by searches or tags. With DocTabs, however, you can organize a file
-into sections, which you can visualize and jump between. Each section keeps
-its own editing view so you can jump back to where you were easily. The
-prefix-style switching should be familiar to screen/tmux users. The tabline is
-used to show all the sections and highlight the currently active one, hence
-the plugin's name. 
+to jumping by searches or tags. With DocTabs, however, you can organize
+a large file into sections, which you can visualize and jump between. Each
+section keeps its own editing view so you can jump back to where you were
+easily. The prefix-style switching should be familiar to screen/tmux users.
+The tabline is used to show all the sections and highlight the currently
+active one, hence the plugin's name. 
 
 This is useful for a wide range of scenarios: documentation, source code,
 HTML, project plans, todo or GTD files, reminder files, journals, novels, your
@@ -49,11 +49,12 @@ Current features:
 - Customizable section pattern
 - Optionally keeps independent context (window and cursor position) for each section
 - Optionally fold away sections other than the active one
-- Navigation functions and shortcuts similar to GNU screen:
+- Navigation functions and shortcuts similar to screen/tmux:
   Jump to sections 0-9
   Jump to sections 10+ fast with alphanumeric labels
   Jump to next, previous section
   Jump to last (alternate) section in stack
+- User-settable switching prefix, a la screen/tmux
 - Section headings are highlighted
 
 Planned features:
@@ -109,21 +110,23 @@ Navigating is very simple. You use the following shortcuts:
     <Leader>gg      Jump to alternate section
 
 If you have used screen, tmux, or vim's built-in window switching,
-this paradigm should be familiar. If you've only used vim's switching,
-jumping directly to a section by number should be the only new idea.
+this paradigm should be familiar.
 
-However, I find using the Ctrl-g prefix much more ergonomic. If you already
-display your document position in your statusline, chances are you don't need
-Ctrl-g. Using it means you use different hands to perform the next/prev
-shortcuts, and can type the chord repeatedly to toggle between the two most
-recent section.
- 
-If you want to use Ctrl-g as a switching prefix, there is an optional helper
-command to set up those shortcuts. Just add this to your ~/vimrc:
+However, I find using a chord much more ergonomic, so I use C-g as a switching
+prefix. If you already display your document position in your statusline,
+chances are you don't need C-g. Using it means you use different hands to
+perform the next/prev shortcuts, and can type the chord repeatedly to toggle
+between the two most recent sections.
 
-    call dtab#dtCgBindings()
+If you want to use a chord as a switching prefix, just add this to your
+~/.vimrc:
 
-Or you can define the mappings directly in your ~/.vimrc with:
+    call dtab#dtPrefixBindings('C-g')
+
+Replace 'C-g' with any other prefix chord you want to use. This is an optional
+step, as you can always use the <Leader> keybindings.
+
+You can also define any mappings you like directly in your ~/.vimrc, e.g.:
 
     nnoremap <silent> <C-g>0 :call dtab#dtJump(0)<CR>
     nnoremap <silent> <C-g>1 :call dtab#dtJump(1)<CR>
@@ -140,6 +143,13 @@ Or you can define the mappings directly in your ~/.vimrc with:
     nnoremap <silent> <C-g><C-p> :call dtab#dtJumpPrev()<CR>
     nnoremap <silent> <C-g>n :call dtab#dtJumpNext()<CR>
     nnoremap <silent> <C-g>p :call dtab#dtJumpPrev()<CR>
+
+Note that if you use alphanumeric labels (see g:doctabs_alpha_labels), you'll
+want to set up bindings for those as well:
+
+    nnoremap <silent> <C-g>q :call dtab#dtJump(10)<CR>
+    nnoremap <silent> <C-g>w :call dtab#dtJump(11)<CR>
+    ...
 
 ------------------------------------------------------------------------------
                                                     *doctabs-options*
@@ -218,8 +228,8 @@ sections start. On by default:
 Whether to extend the tab labels beyond 0-9 with qwert... labels. This also
 activates keybindings for those, so you can switch to section 10 with
 <Leader>gq, section 11 with <Leader>gw, and so on. When used in conjunction
-with calling dtab#dtCgBindings() in your ~/.vimrc (see section 5, Usage),
-activates <C-g> prefix bindings, such as <C-g>q, <C-g>w, etc.
+with calling dtab#dtPrefixBindings() in your ~/.vimrc (see section 5, Usage),
+activates prefix bindings for those labels, e.g. <C-g>q, <C-g>w, etc.
 
 This option makes it much easier to manage more than 10 sections in your
 document, and is on by default.

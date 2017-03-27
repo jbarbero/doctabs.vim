@@ -339,20 +339,21 @@ endfunction
 
 " ###Bindings
 
-" Set up <Leader> keybindings
+" Set up keybindings once g:doctabs_alpha_labels is available
 function! dtab#dtBindings(which)
-    if a:which == 'leader'
-        nnoremap <silent> <Leader>gg :call dtab#dtJumpAlt()<CR>
-        nnoremap <silent> <Leader>gn :call dtab#dtJumpNext()<CR>
-        nnoremap <silent> <Leader>gp :call dtab#dtJumpPrev()<CR>
-    elseif a:which == 'cg'
-        nnoremap <silent> <C-g><C-g> :call dtab#dtJumpAlt()<CR>
-        nnoremap <silent> <C-g><C-n> :call dtab#dtJumpNext()<CR>
-        nnoremap <silent> <C-g><C-p> :call dtab#dtJumpPrev()<CR>
-        nnoremap <silent> <C-g>n :call dtab#dtJumpNext()<CR>
-        nnoremap <silent> <C-g>p :call dtab#dtJumpPrev()<CR>
+    " The jump to alternate binding depends on whether we use Leader or a chord
+    if a:which == 'Leader'
+        execute 'nnoremap <silent> <' . a:which . '>gg :call dtab#dtJumpAlt()<CR>'
+    else
+        execute 'nnoremap <silent> <' . a:which . '><' . a:which . '> :call dtab#dtJumpAlt()<CR>'
     end
 
+    " The form of next and prev is the same
+    execute 'nnoremap <silent> <' . a:which . '>n :call dtab#dtJumpNext()<CR>'
+    execute 'nnoremap <silent> <' . a:which . '>p :call dtab#dtJumpPrev()<CR>'
+
+    " The jump to label binding also depends on whether we use Leader or
+    " a chord
     let labels = split('0123456789', '\zs')
     if g:doctabs_alpha_labels
         let labels = split(g:doctabs_labels, '\zs')
@@ -360,19 +361,30 @@ function! dtab#dtBindings(which)
 
     let ii = 0
     for label in labels
-        if a:which == 'leader'
-            execute 'nnoremap <silent> <Leader>g' . label . ' :call dtab#dtJump(' . ii . ')<CR>'
-        elseif a:which == 'cg'
-            execute 'nnoremap <silent> <C-g>' . label . ' :call dtab#dtJump(' . ii . ')<CR>'
+        if a:which == 'Leader'
+            execute 'nnoremap <silent> <' . a:which . '>g' . label . ' :call dtab#dtJump(' . ii . ')<CR>'
+        else
+            execute 'nnoremap <silent> <' . a:which . '>' . label . ' :call dtab#dtJump(' . ii . ')<CR>'
         end
         let ii += 1
     endfor
 endfunction
 
-" Set up C-g keybindings
+" Set up C-g keybindings. This method is provided for backward-compatibility.
 function! dtab#dtCgBindings()
+    call dtab#dtPrefixBindings('C-g')
+endfunction
+
+" Set up bindings with a given prefix
+function! dtab#dtPrefixBindings(prefix)
     " We don't actually set any bindings here, as the exact bindings depend on
     " g:doctabs_alpha_labels, which is not necessarily loaded at ~/.vimrc time
-    let g:_doctabs_user_bindings = 'cg'
+
+    if a:prefix == ''
+        echoerr "Can't specify an empty keybinding prefix"
+        return
+    endif
+
+    let g:_doctabs_user_prefix = a:prefix
 endfunction
 

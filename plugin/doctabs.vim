@@ -17,6 +17,7 @@
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "
 " Versions:
+" 0.8   Allow user-specified switching prefix
 " 0.7   Allow alphanumeric tab labels for easier switching
 " 0.6   Handle tabline overflow rendering
 " 0.5   Highlight section headings, only update views when using jumps
@@ -28,7 +29,6 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
-" - Allow user-specified keybinding prefix
 " - Allow sections to be used as text objects. See:
 "   https://github.com/b4winckler/vim-angry/blob/master/plugin/angry.vim
 " - Allow sections to be moved and renumbered like screen windows
@@ -66,7 +66,7 @@ let g:doctabs_highlight_headings = get(g:, 'doctabs_highlight_headings', 1)
 
 " Internal flags
 let g:_doctabs_save_view_on_move = get(g:, '_doctabs_save_view_on_move', 0)
-let g:_doctabs_user_bindings     = get(g:, '_doctabs_user_bindings',     'leader')
+let g:_doctabs_user_prefix       = get(g:, '_doctabs_user_prefix',       '')
 
 " All numbers and letters except those used for keybindings: n, p, g, N, P, G
 let g:doctabs_labels = '0123456789qwertyuioasdfhjklzxcvbmQWERTYUIOASDFHJKLZXCVBM'
@@ -84,9 +84,11 @@ au! BufWritePost * call dtab#dtInit()
 au! WinEnter * call dtab#dtWindowInit()
 augroup END
 
-" Default keybindings with <Leader>
-call dtab#dtBindings('leader')
-if g:_doctabs_user_bindings != 'leader'
-    call dtab#dtBindings(g:_doctabs_user_bindings)
+" We always set up default keybindings with <Leader>
+call dtab#dtBindings('Leader')
+
+" We also optionally set up keybindings with a user-supplied prefix
+if g:_doctabs_user_prefix != ''
+    call dtab#dtBindings(g:_doctabs_user_prefix)
 end
 
