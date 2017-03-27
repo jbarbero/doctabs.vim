@@ -5,16 +5,18 @@ DocTabs: a vim plugin for organizing a file into sections
 
 Author: Janos Barbero <jbarbero@cs.washington.edu>
 
-DocTabs is a plugin that lets you organize a file into sections which
-look like a collection of separate files with their own separate context.
-When you are done working on one section, you can jump to another section
-with your normal movement commands, or by the provided navigation commands,
-and resume the same editing context you had in that section. The tabline
-is used to highlight the currently active section.
+DocTabs is like having screen/tmux for a single buffer. Vim already
+lets you manage different buffers very efficiently, but within a
+buffer you are limited to jumping by searches or tags. With DocTabs,
+however, you can organize a large file into sections, which you can
+visualize and jump between. Each section keeps its own editing view
+so you can jump back to where you were easily. The prefix-style
+switching should be familiar to screen/tmux users. The tabline is
+used to show all the sections and highlight the currently active
+one, hence the plugin's name.
 
-This allows you to zoom in on one section at a time, but still jump
-to another section seamlessly. Some use cases are documentation,
-source code, HTML, project plans, todo or GTD files, reminder files,
+This is useful for a wide range of scenarios: documentation, source
+code, HTML, project plans, todo or GTD files, reminder files,
 journals, novels, your ~/.vimrc, etc. The DocTabs plugin and
 documentation were both written using DocTabs.
 
