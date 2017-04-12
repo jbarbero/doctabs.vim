@@ -29,6 +29,7 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
+" - Bug: If only one named section, it is not rendered
 " - Allow sections to be used as text objects. See:
 "   https://github.com/b4winckler/vim-angry/blob/master/plugin/angry.vim
 " - Allow sections to be moved and renumbered like screen windows
@@ -77,7 +78,6 @@ call extend(g:doctabs_filetype_defaults,
 
 " Autocommands
 augroup doctabs
-" au! BufWinEnter * call dtab#dtInit()
 au! BufEnter * call dtab#dtInit()
 au! BufWinEnter * call dtab#dtInit()
 au! BufWritePost * call dtab#dtInit()
