@@ -29,4 +29,15 @@ Asciicast
 
 [![asciicast](https://asciinema.org/a/107382.png)](https://asciinema.org/a/107382)
 
+Versions
+--------
+- 0.9  Allow spaces in section names, pick up section changes sooner
+- 0.8  Allow user-specified switching prefix
+- 0.7  Allow alphanumeric tab labels for easier switching
+- 0.6  Handle tabline overflow rendering
+- 0.5  Highlight section headings, only update views when using jumps
+- 0.4  Optional folding of other sections
+- 0.3  Navigation functions to switch between sections
+- 0.2  Save context for each section
+- 0.1  Render tabline
 
