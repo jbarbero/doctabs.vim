@@ -17,6 +17,7 @@
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "
 " Versions:
+" 0.9   Allow spaces in section names, pick up section changes sooner
 " 0.8   Allow user-specified switching prefix
 " 0.7   Allow alphanumeric tab labels for easier switching
 " 0.6   Handle tabline overflow rendering
@@ -29,17 +30,24 @@
 " -----------------------------------------------------------------------
 "
 " Planned:
+" - Persist per-section views between edit sessions via session hooks or
+"   separately
+" - Pin section to window so section jump involves window jump. But beware bad
+"   user experience.
+" - When jumping to a section, try to avoid showing the previous section(s)
+"   above it, by manipulating the view
+"
 " - Bug: If only one named section, it is not rendered
-" - Allow sections to be used as text objects. See:
-"   https://github.com/b4winckler/vim-angry/blob/master/plugin/angry.vim
-" - Allow sections to be moved and renumbered like screen windows
-" - Handle tabline click to select section in terminal and gui vim
-" - Better section patterns to cover all vim help file formats
 " - Handle section changes due to lines changing, not just writes. Decide
 "   which file updates will trigger this.
 " - Keep old value of showtabline around, use it if no sections remain
 "
-" Optional:
+" Maybe:
+" - Better section patterns to cover all vim help file formats
+" - Allow sections to be used as text objects. See:
+"   https://github.com/b4winckler/vim-angry/blob/master/plugin/angry.vim
+" - Allow sections to be moved and renumbered like screen windows
+" - Handle tabline click to select section in terminal and gui vim
 " - Section switching menu or window
 " - Make which group to use configurable?
 " - Make tabline use optional (g:doctabs_use_tabline)
@@ -49,11 +57,11 @@
 "   transparently pinned to a given window
 " - Add signs (visual marks) to denote sections
 "
-" KnownIssues:
+" Known:
 " - Section highlights only show up in one window when splitting
 
 " Config
-let g:doctabs_default_pattern    = get(g:, 'doctabs_default_pattern',    '###\([a-zA-Z0-9_:-]\+\)')
+let g:doctabs_default_pattern    = get(g:, 'doctabs_default_pattern',    '###\([a-zA-Z0-9_:-][a-zA-Z0-9_: -]*\)')
 let g:doctabs_filetype_defaults  = {
             \'help':    '^[0-9]\+\. \(.*\)\~',
             \}

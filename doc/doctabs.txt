@@ -163,7 +163,8 @@ g:doctabs_default_pattern is the pattern DocTabs uses to find section
 headings, unless a filetype-specific override has been specified
 (see next option). Don't set this to a common string or a small
 unit like a function, or DocTabs will show you too many small
-sections. Use this for headings, classes, etc. Default value is:
+sections. Use this for headings, classes, etc. For example, the default
+value allows spaces in section names. You could override this, e.g.:
 
     let g:doctabs_default_pattern = '###\([a-zA-Z0-9_:-]\+\)'
 
