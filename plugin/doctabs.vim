@@ -16,20 +16,10 @@
 " You should have received a copy of the GNU General Public License
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "
-" Versions:
-" 0.9   Allow spaces in section names, pick up section changes sooner
-" 0.8   Allow user-specified switching prefix
-" 0.7   Allow alphanumeric tab labels for easier switching
-" 0.6   Handle tabline overflow rendering
-" 0.5   Highlight section headings, only update views when using jumps
-" 0.4   Optional folding of other sections
-" 0.3   Navigation functions to switch between sections
-" 0.2   Save context for each section
-" 0.1   Render tabline
-"
 " -----------------------------------------------------------------------
 "
 " Planned:
+" - TODO: Scrolling (C-f) got broken by the new views somehow
 " - Persist per-section views between edit sessions via session hooks or
 "   separately
 " - Pin section to window so section jump involves window jump. But beware bad
@@ -61,21 +51,22 @@
 " - Section highlights only show up in one window when splitting
 
 " Config
-let g:doctabs_default_pattern    = get(g:, 'doctabs_default_pattern',    '###\([a-zA-Z0-9_:-][a-zA-Z0-9_: -]*\)')
-let g:doctabs_filetype_defaults  = {
+let g:doctabs_default_pattern      = get(g:, 'doctabs_default_pattern',    '###\([a-zA-Z0-9_:-][a-zA-Z0-9_: -]*\)')
+let g:doctabs_filetype_defaults    = {
             \'help':    '^[0-9]\+\. \(.*\)\~',
             \}
-let g:doctabs_filetype_patterns  = g:doctabs_filetype_defaults
-let g:doctabs_default_section    = get(g:, 'doctabs_default_section',    '~Top')
-let g:doctabs_number_tabs        = get(g:, 'doctabs_number_tabs',        1)
-let g:doctabs_alpha_labels       = get(g:, 'doctabs_alpha_labels',       1)
-let g:doctabs_section_views      = get(g:, 'doctabs_section_views',      1)
-let g:doctabs_fold_others        = get(g:, 'doctabs_fold_others',        0)
-let g:doctabs_highlight_headings = get(g:, 'doctabs_highlight_headings', 1)
+let g:doctabs_filetype_patterns    = g:doctabs_filetype_defaults
+let g:doctabs_default_section      = get(g:, 'doctabs_default_section',      '~Top')
+let g:doctabs_number_tabs          = get(g:, 'doctabs_number_tabs',          1)
+let g:doctabs_alpha_labels         = get(g:, 'doctabs_alpha_labels',         1)
+let g:doctabs_section_views        = get(g:, 'doctabs_section_views',        1)
+let g:doctabs_fold_others          = get(g:, 'doctabs_fold_others',          0)
+let g:doctabs_highlight_headings   = get(g:, 'doctabs_highlight_headings',   1)
 
 " Internal flags
-let g:_doctabs_save_view_on_move = get(g:, '_doctabs_save_view_on_move', 0)
-let g:_doctabs_user_prefix       = get(g:, '_doctabs_user_prefix',       '')
+let g:_doctabs_save_view_on_move   = get(g:, '_doctabs_save_view_on_move',   0)
+let g:_doctabs_user_prefix         = get(g:, '_doctabs_user_prefix',         '')
+let g:_doctabs_section_fast_update = get(g:, '_doctabs_section_fast_update', 1)
 
 " All numbers and letters except those used for keybindings: n, p, g, N, P, G
 let g:doctabs_labels = '0123456789qwertyuioasdfhjklzxcvbmQWERTYUIOASDFHJKLZXCVBM'

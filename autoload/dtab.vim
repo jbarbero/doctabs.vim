@@ -16,7 +16,7 @@
 " You should have received a copy of the GNU General Public License
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-" ###Sections and Others
+" ###Sections
 
 " Find current section and return its entry
 function! dtab#dtGetCurrentSection()
@@ -244,6 +244,70 @@ function! dtab#dtInit()
         augroup doctabs
         if g:doctabs_section_views
             if g:_doctabs_save_view_on_move
+                if g:_doctabs_section_fast_update == 1
+                    au! CursorMoved * 
+                        \ let w:newlen = line('$') 
+                        \ | if w:curlen != w:newlen
+                            \ | call dtab#dtUpdate()
+                            \ | let w:curlen = w:newlen
+                        \ | else
+                            \ | let w:newline = line('.') 
+                            \ | if w:curline != w:newline 
+                                \ | if (w:newline < w:tagstart || 
+                                    \ (w:tagend != '$' && w:newline > w:tagend)) 
+                                    \ | call dtab#dtSectionMoved(1) 
+                                \ | else 
+                                    \ | if g:doctabs_section_views 
+                                        \ | let b:sections[w:section][3] = winsaveview() 
+                                    \ | endif 
+                                \ | endif
+                                \ | let w:curline = w:newline
+                            \ | endif
+                        \ | endif
+                else
+                    au! CursorMoved * 
+                        \ let w:newline = line('.') 
+                        \ | if w:curline != w:newline 
+                            \ | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) 
+                                \ | call dtab#dtSectionMoved(1) 
+                            \ | else 
+                                \ | if g:doctabs_section_views 
+                                    \ | let b:sections[w:section][3] = winsaveview() 
+                                \ | endif 
+                            \ | endif 
+                            \ | let w:curline = w:newline 
+                        \ | endif
+                endif
+            else
+                if g:_doctabs_section_fast_update == 1
+                    au! CursorMoved * 
+                        \ let w:newlen = line('$') 
+                        \ | if w:curlen != w:newlen
+                            \ | call dtab#dtUpdate()
+                            \ | let w:curlen = w:newlen
+                        \ | else
+                            \ | let w:newline = line('.')
+                            \ | if w:curline != w:newline
+                                \ | if (w:newline < w:tagstart || 
+                                    \ (w:tagend != '$' && w:newline > w:tagend))
+                                    \ | call dtab#dtSectionMoved(0) 
+                                \ | endif 
+                                \ | let w:curline = w:newline 
+                            \ | endif
+                        \ | endif
+                else
+                    au! CursorMoved * 
+                        \ let w:newline = line('.') 
+                        \ | if w:curline != w:newline 
+                            \ | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) 
+                                \ | call dtab#dtSectionMoved(0) 
+                            \ | endif 
+                            \ | let w:curline = w:newline 
+                        \ | endif
+                endif
+            endif
+        else
+            if g:_doctabs_section_fast_update == 1
                 au! CursorMoved * 
                     \ let w:newlen = line('$') 
                     \ | if w:curlen != w:newlen
@@ -255,47 +319,20 @@ function! dtab#dtInit()
                             \ | if (w:newline < w:tagstart || 
                                 \ (w:tagend != '$' && w:newline > w:tagend)) 
                                 \ | call dtab#dtSectionMoved(1) 
-                            \ | else 
-                                \ | if g:doctabs_section_views 
-                                    \ | let b:sections[w:section][3] = winsaveview() 
-                                \ | endif 
-                            \ | endif
-                            \ | let w:curline = w:newline
-                        \ | endif
-                    \ | endif
-            else
-                au! CursorMoved * 
-                    \ let w:newlen = line('$') 
-                    \ | if w:curlen != w:newlen
-                        \ | call dtab#dtUpdate()
-                        \ | let w:curlen = w:newlen
-                    \ | else
-                        \ | let w:newline = line('.')
-                        \ | if w:curline != w:newline
-                            \ | if (w:newline < w:tagstart || 
-                                \ (w:tagend != '$' && w:newline > w:tagend))
-                                \ | call dtab#dtSectionMoved(0) 
                             \ | endif 
                             \ | let w:curline = w:newline 
                         \ | endif
                     \ | endif
-            endif
-        else
-            au! CursorMoved * 
-                \ let w:newlen = line('$') 
-                \ | if w:curlen != w:newlen
-                    \ | call dtab#dtUpdate()
-                    \ | let w:curlen = w:newlen
-                \ | else
-                    \ | let w:newline = line('.') 
+            else
+                au! CursorMoved * 
+                    \ let w:newline = line('.') 
                     \ | if w:curline != w:newline 
-                        \ | if (w:newline < w:tagstart || 
-                            \ (w:tagend != '$' && w:newline > w:tagend)) 
+                        \ | if (w:newline < w:tagstart || (w:tagend != '$' && w:newline > w:tagend)) 
                             \ | call dtab#dtSectionMoved(1) 
                         \ | endif 
                         \ | let w:curline = w:newline 
                     \ | endif
-                \ | endif
+            endif
         endif
         augroup END
 
